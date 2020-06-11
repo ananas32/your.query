@@ -17,3 +17,8 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/events/user');
+Route::post('/event/create');
+Route::put('event/update/{id}');
+Route::delete('event/delete/{id}');

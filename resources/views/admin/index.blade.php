@@ -159,6 +159,22 @@
                 }
             });
 
+            // $.ajax({
+            //     type: "GET",
+            //     url: url,
+            //     success: function (response) {
+            //         var html = response.html;
+            //         addItems(appendClass, html);
+            //         if (!response.has_more_pages) {
+            //             $(appendClass + '  .section-readmore').remove();
+            //         }
+            //         currentPage++;
+            //     },
+            //     error: function (response) {
+            //         console.log(response);
+            //     }
+            // });
+
             var calendar = new Calendar(calendarEl, {
                 plugins: [ 'bootstrap', 'interaction', 'dayGrid', 'timeGrid' ],
                 header    : {
@@ -170,7 +186,7 @@
                 //Random default events
                 events    : [
                     {
-                        title          : 'All Day Event',
+                        title          : 'kurwa matka',
                         start          : new Date(y, m, 1),
                         backgroundColor: '#f56954', //red
                         borderColor    : '#f56954', //red
