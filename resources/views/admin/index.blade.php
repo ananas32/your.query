@@ -20,11 +20,11 @@
                             <div class="card-body">
                                 <!-- the events -->
                                 <div id="external-events">
-                                    <div class="external-event bg-success">Lunch</div>
-                                    <div class="external-event bg-warning">Go home</div>
-                                    <div class="external-event bg-info">Do homework</div>
-                                    <div class="external-event bg-primary">Work on UI design</div>
-                                    <div class="external-event bg-danger">Sleep tight</div>
+                                    @if($eventsWithOutDate->isNotEmpty())
+                                        @foreach($eventsWithOutDate as $item)
+                                            <div class="external-event" style="background: {{ $item->background_color }}; color: white">{{ $item->title }}</div>
+                                        @endforeach
+                                    @endif
                                     <div class="checkbox">
                                         <label for="drop-remove">
                                             <input type="checkbox" id="drop-remove">
@@ -44,11 +44,16 @@
                                 <div class="btn-group" style="width: 100%; margin-bottom: 10px;">
                                     <!--<button type="button" id="color-chooser-btn" class="btn btn-info btn-block dropdown-toggle" data-toggle="dropdown">Color <span class="caret"></span></button>-->
                                     <ul class="fc-color-picker" id="color-chooser">
-                                        <li><a class="text-primary" href="#"><i class="fas fa-square"></i></a></li>
-                                        <li><a class="text-warning" href="#"><i class="fas fa-square"></i></a></li>
-                                        <li><a class="text-success" href="#"><i class="fas fa-square"></i></a></li>
-                                        <li><a class="text-danger" href="#"><i class="fas fa-square"></i></a></li>
-                                        <li><a class="text-muted" href="#"><i class="fas fa-square"></i></a></li>
+                                        <li><a class="text-primary" data-color="#1240AB" href="#"><i
+                                                    class="fas fa-square"></i></a></li>
+                                        <li><a class="text-warning" data-color="#FFFF73" href="#"><i
+                                                    class="fas fa-square"></i></a></li>
+                                        <li><a class="text-success" data-color="#008500" href="#"><i
+                                                    class="fas fa-square"></i></a></li>
+                                        <li><a class="text-danger" data-color="#A60000" href="#"><i
+                                                    class="fas fa-square"></i></a></li>
+                                        <li><a class="text-muted" data-color="#235B79" href="#"><i
+                                                    class="fas fa-square"></i></a></li>
                                     </ul>
                                 </div>
                                 <!-- /btn-group -->
@@ -85,8 +90,8 @@
 @stop
 
 @section('css')
-    <link href='{{ asset('packages/core/main.css') }}' rel='stylesheet' />
-    <link href='{{ asset('packages/daygrid/main.css') }}' rel='stylesheet' />
+    <link href='{{ asset('packages/core/main.css') }}' rel='stylesheet'/>
+    <link href='{{ asset('packages/daygrid/main.css') }}' rel='stylesheet'/>
 @stop
 
 @section('js')
@@ -118,8 +123,8 @@
 
                     // make the event draggable using jQuery UI
                     $(this).draggable({
-                        zIndex        : 1070,
-                        revert        : true, // will cause the event to go back to its
+                        zIndex: 1070,
+                        revert: true, // will cause the event to go back to its
                         revertDuration: 0  //  original position after the drag
                     })
 
@@ -132,9 +137,10 @@
              -----------------------------------------------------------------*/
             //Date for the calendar events (dummy data)
             var date = new Date();
-            var d    = date.getDate(),
-                m    = date.getMonth(),
-                y    = date.getFullYear();
+            var d = date.getDate(),
+                m = date.getMonth(),
+                y = date.getFullYear();
+            var userEventsList;
 
             var Calendar = FullCalendar.Calendar;
             var Draggable = FullCalendarInteraction.Draggable;
@@ -148,92 +154,52 @@
 
             new Draggable(containerEl, {
                 itemSelector: '.external-event',
-                eventData: function(eventEl) {
+                eventData: function (eventEl) {
                     console.log(eventEl);
                     return {
                         title: eventEl.innerText,
-                        backgroundColor: window.getComputedStyle( eventEl ,null).getPropertyValue('background-color'),
-                        borderColor: window.getComputedStyle( eventEl ,null).getPropertyValue('background-color'),
-                        textColor: window.getComputedStyle( eventEl ,null).getPropertyValue('color'),
+                        backgroundColor: window.getComputedStyle(eventEl, null).getPropertyValue('background-color'),
+                        borderColor: window.getComputedStyle(eventEl, null).getPropertyValue('background-color'),
+                        textColor: window.getComputedStyle(eventEl, null).getPropertyValue('color'),
                     };
                 }
             });
 
-            // $.ajax({
-            //     type: "GET",
-            //     url: url,
-            //     success: function (response) {
-            //         var html = response.html;
-            //         addItems(appendClass, html);
-            //         if (!response.has_more_pages) {
-            //             $(appendClass + '  .section-readmore').remove();
-            //         }
-            //         currentPage++;
-            //     },
-            //     error: function (response) {
-            //         console.log(response);
-            //     }
-            // });
+            $.ajax({
+                type: "GET",
+                url: "{{ route('user.events') }}",
+                async: false,
+                success: function (response) {
+                    userEventsList = response.events;
+                },
+                error: function (response) {
+                    console.log(response);
+                }
+            });
+            for (var key in userEventsList) {
+                userEventsList[key].start = new Date(userEventsList[key].start_at);
+                userEventsList[key].end = new Date(userEventsList[key].end_at);
+                userEventsList[key].backgroundColor = userEventsList[key].background_color;
+                userEventsList[key].borderColor = userEventsList[key].border_color;
+
+                //            $event->allDay = $event->all_day;
+            }
+            console.log(userEventsList);
 
             var calendar = new Calendar(calendarEl, {
-                plugins: [ 'bootstrap', 'interaction', 'dayGrid', 'timeGrid' ],
-                header    : {
-                    left  : 'prev,next today',
+                plugins: ['bootstrap', 'interaction', 'dayGrid', 'timeGrid'],
+                header: {
+                    left: 'prev,next today',
                     center: 'title',
-                    right : 'dayGridMonth,timeGridWeek,timeGridDay'
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 },
                 'themeSystem': 'bootstrap',
                 //Random default events
-                events    : [
-                    {
-                        title          : 'kurwa matka',
-                        start          : new Date(y, m, 1),
-                        backgroundColor: '#f56954', //red
-                        borderColor    : '#f56954', //red
-                        allDay         : true
-                    },
-                    {
-                        title          : 'Long Event',
-                        start          : new Date(y, m, d - 5),
-                        end            : new Date(y, m, d - 2),
-                        backgroundColor: '#f39c12', //yellow
-                        borderColor    : '#f39c12' //yellow
-                    },
-                    {
-                        title          : 'Meeting',
-                        start          : new Date(y, m, d, 10, 30),
-                        allDay         : false,
-                        backgroundColor: '#0073b7', //Blue
-                        borderColor    : '#0073b7' //Blue
-                    },
-                    {
-                        title          : 'Lunch',
-                        start          : new Date(y, m, d, 12, 0),
-                        end            : new Date(y, m, d, 14, 0),
-                        allDay         : false,
-                        backgroundColor: '#00c0ef', //Info (aqua)
-                        borderColor    : '#00c0ef' //Info (aqua)
-                    },
-                    {
-                        title          : 'Birthday Party',
-                        start          : new Date(y, m, d + 1, 19, 0),
-                        end            : new Date(y, m, d + 1, 22, 30),
-                        allDay         : false,
-                        backgroundColor: '#00a65a', //Success (green)
-                        borderColor    : '#00a65a' //Success (green)
-                    },
-                    {
-                        title          : 'Click for Google',
-                        start          : new Date(y, m, 28),
-                        end            : new Date(y, m, 29),
-                        url            : 'https://www.google.com/',
-                        backgroundColor: '#3c8dbc', //Primary (light-blue)
-                        borderColor    : '#3c8dbc' //Primary (light-blue)
-                    }
-                ],
-                editable  : true,
-                droppable : true, // this allows things to be dropped onto the calendar !!!
-                drop      : function(info) {
+                events:
+                userEventsList,
+                editable: true,
+                droppable: true, // this allows things to be dropped onto the calendar !!!
+                drop: function (info) {
                     // is the "remove after drop" checkbox checked?
                     if (checkbox.checked) {
                         // if so, remove the element from the "Draggable Events" list
@@ -247,17 +213,20 @@
 
             /* ADDING EVENTS */
             var currColor = '#3c8dbc'; //Red by default
+            var hashColor = '';
             //Color chooser button
             $('#color-chooser > li > a').click(function (e) {
                 e.preventDefault();
                 //Save color
                 currColor = $(this).css('color');
+                hashColor = $(this).data("color");
                 //Add color effect to button
                 $('#add-new-event').css({
                     'background-color': currColor,
-                    'border-color'    : currColor
+                    'border-color': currColor
                 })
             });
+
             $('#add-new-event').click(function (e) {
                 e.preventDefault();
                 //Get value and make sure it is not null
@@ -267,21 +236,34 @@
                 }
 
                 //Create events
-                var event = $('<div />')
+                var event = $('<div />');
                 event.css({
                     'background-color': currColor,
-                    'border-color'    : currColor,
-                    'color'           : '#fff'
+                    'border-color': currColor,
+                    'color': '#fff'
                 }).addClass('external-event');
                 event.html(val);
                 $('#external-events').prepend(event);
+
+                jQuery.post(
+                    "{{ route('event.create') }}",
+                    {
+                        _token: "{{ csrf_token() }}",
+                        title: val,
+                        color: hashColor,
+                    }
+                );
 
                 //Add draggable funtionality
                 ini_events(event);
 
                 //Remove event from text input
                 $('#new-event').val('')
-            })
+            });
+
+            function rgbToHex(r, g, b) {
+                return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+            }
         })
     </script>
 @stop
