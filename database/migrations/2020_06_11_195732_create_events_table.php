@@ -23,6 +23,10 @@ class CreateEventsTable extends Migration
             $table->string('border_color', 255)->nullable();
             $table->string('all_day', 255)->nullable();
             $table->string('url', 255)->nullable();
+            $table->text('text')->nullable();
+            $table->string('image', 255)->nullable();
+            $table->string('file', 255)->nullable();
+
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

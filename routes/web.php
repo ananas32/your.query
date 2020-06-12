@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Route;
 */
 Route::group(['prefix' => 'admin'], function () {
     Route::get('/', 'EventController@index');
+    Route::put('/event/{id}', 'EventController@saveInfo')->name('save.event.info');
+    Route::get('/event/{id}/edit', 'EventController@edit');
 });
 
 
