@@ -9,7 +9,7 @@ class EventController extends Controller
 {
     public function userEventsList()
     {
-        $events = Event::get();
+        $events = Event::whereUserId(auth()->user()->id)->get();
 
         return response()->json([
             'events' => $events,
@@ -25,7 +25,7 @@ class EventController extends Controller
     public function create(Request $request)
     {
         $event = new Event();
-        $event->user_id = 1;
+        $event->user_id = auth()->user()->id;
         $event->title = $request->title;
         $event->background_color = $request->color;
         $event->border_color = $request->color;
@@ -60,6 +60,8 @@ class EventController extends Controller
         }
 
         $event->text = $request->text;
+        $event->start_at = $request->start_at;
+        $event->end_at = $request->end_at;
         $event->save();
         return redirect()->back()->with('success', 'Дані успішно збережені');
     }

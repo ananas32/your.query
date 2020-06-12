@@ -181,6 +181,8 @@
                 userEventsList[key].end = new Date(userEventsList[key].end_at);
                 userEventsList[key].backgroundColor = userEventsList[key].background_color;
                 userEventsList[key].borderColor = userEventsList[key].border_color;
+                userEventsList[key].url = '/admin/event/'+userEventsList[key].id+'/edit';
+
             }
 
             var calendar = new Calendar(calendarEl, {

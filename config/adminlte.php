@@ -249,27 +249,27 @@ return [
 //            'label_color' => 'success',
 //        ],
         ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url'  => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'change_password',
-            'url'  => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
-        ['header' => 'events_settings'],
-        [
-            'text' => 'events',
-            'url'  => 'admin/events',
-            'icon' => 'fas fa-fw fa-event',
-        ],
-        [
-            'text' => 'calendar',
-            'url'  => 'admin/calendar',
-            'icon' => 'fas fa-fw fa-calendar',
-        ],
+//        [
+//            'text' => 'profile',
+//            'url'  => 'admin/settings',
+//            'icon' => 'fas fa-fw fa-user',
+//        ],
+//        [
+//            'text' => 'change_password',
+//            'url'  => 'admin/settings',
+//            'icon' => 'fas fa-fw fa-lock',
+//        ],
+//        ['header' => 'events_settings'],
+//        [
+//            'text' => 'events',
+//            'url'  => 'admin/events',
+//            'icon' => 'fas fa-fw fa-event',
+//        ],
+//        [
+//            'text' => 'calendar',
+//            'url'  => 'admin/calendar',
+//            'icon' => 'fas fa-fw fa-calendar',
+//        ],
 //        [
 //            'text'    => 'multilevel',
 //            'icon'    => 'fas fa-fw fa-share',

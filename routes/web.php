@@ -12,12 +12,13 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::group(['prefix' => 'admin'], function () {
-    Route::get('/', 'EventController@index');
-    Route::put('/event/{id}', 'EventController@saveInfo')->name('save.event.info');
-    Route::get('/event/{id}/edit', 'EventController@edit');
+Route::middleware('auth')->group(function () {
+    Route::group(['prefix' => 'admin'], function () {
+        Route::get('/', 'EventController@index');
+        Route::put('/event/{id}', 'EventController@saveInfo')->name('save.event.info');
+        Route::get('/event/{id}/edit', 'EventController@edit');
+    });
 });
-
 
 Route::get('/', function () {
     return view('welcome');
