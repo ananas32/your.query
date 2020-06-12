@@ -30,6 +30,10 @@ class EventController extends Controller
         $event->background_color = $request->color;
         $event->border_color = $request->color;
         $event->save();
+
+        return response()->json([
+            'id' => $event->id,
+        ]);
     }
 
     public function update(Request $request)

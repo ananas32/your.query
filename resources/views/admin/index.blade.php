@@ -22,7 +22,7 @@
                                 <div id="external-events">
                                     @if($eventsWithOutDate->isNotEmpty())
                                         @foreach($eventsWithOutDate as $item)
-                                            <div class="external-event" style="background: {{ $item->background_color }}; color: white">{{ $item->title }}</div>
+                                            <div class="external-event" style="background: {{ $item->background_color }}; color: white" data-id="{{ $item->id }}">{{ $item->title }}</div>
                                         @endforeach
                                     @endif
                                     <div class="checkbox">
@@ -155,8 +155,8 @@
             new Draggable(containerEl, {
                 itemSelector: '.external-event',
                 eventData: function (eventEl) {
-                    console.log(eventEl);
                     return {
+                        id: $(eventEl).data('id'),
                         title: eventEl.innerText,
                         backgroundColor: window.getComputedStyle(eventEl, null).getPropertyValue('background-color'),
                         borderColor: window.getComputedStyle(eventEl, null).getPropertyValue('background-color'),
@@ -196,14 +196,9 @@
                 editable: true,
                 droppable: true, // this allows things to be dropped onto the calendar !!!
                 eventDrop: function(info) {
-                    // alert(info.event.title + " was dropped on " + info.event.start.toISOString());
                     console.log(info.event);
                     var obj = info.event;
                     saveEdit(obj.id, obj.start, obj.end);
-
-                    // if (!confirm("Are you sure about this change?")) {
-                    //     info.revert();
-                    // }
                 },
                 drop: function (info) {
                     // is the "remove after drop" checkbox checked?
@@ -211,6 +206,7 @@
                         // if so, remove the element from the "Draggable Events" list
                         info.draggedEl.parentNode.removeChild(info.draggedEl);
                     }
+                    saveEdit($(info.draggedEl).data('id'), info.date, info.date);
                 }
             });
             calendar.setOption('locale', 'ru');
@@ -253,6 +249,23 @@
                 if (val.length == 0) {
                     return
                 }
+                var id = '';
+                $.ajax({
+                    type: "POST",
+                    url: "{{ route('event.create') }}",
+                    async: false,
+                    data: {
+                            _token: "{{ csrf_token() }}",
+                            title: val,
+                            color: hashColor,
+                        },
+                    success: function (response) {
+                        id = response.id;
+                    },
+                    error: function (response) {
+                        console.log(response);
+                    }
+                });
 
                 //Create events
                 var event = $('<div />');
@@ -260,18 +273,9 @@
                     'background-color': currColor,
                     'border-color': currColor,
                     'color': '#fff'
-                }).addClass('external-event');
+                }).addClass('external-event').attr('data-id', id);
                 event.html(val);
                 $('#external-events').prepend(event);
-
-                jQuery.post(
-                    "{{ route('event.create') }}",
-                    {
-                        _token: "{{ csrf_token() }}",
-                        title: val,
-                        color: hashColor,
-                    }
-                );
 
                 //Add draggable funtionality
                 ini_events(event);
