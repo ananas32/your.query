@@ -20,5 +20,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('/events/user', 'EventController@userEventsList')->name('user.events');
 Route::post('/event/create', 'EventController@create')->name('event.create');
-Route::put('event/update/{id}');
+Route::put('/event/update', 'EventController@update')->name('event.update');
 Route::delete('event/delete/{id}');

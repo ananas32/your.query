@@ -181,10 +181,7 @@
                 userEventsList[key].end = new Date(userEventsList[key].end_at);
                 userEventsList[key].backgroundColor = userEventsList[key].background_color;
                 userEventsList[key].borderColor = userEventsList[key].border_color;
-
-                //            $event->allDay = $event->all_day;
             }
-            console.log(userEventsList);
 
             var calendar = new Calendar(calendarEl, {
                 plugins: ['bootstrap', 'interaction', 'dayGrid', 'timeGrid'],
@@ -195,10 +192,19 @@
                 },
                 'themeSystem': 'bootstrap',
                 //Random default events
-                events:
-                userEventsList,
+                events: userEventsList,
                 editable: true,
                 droppable: true, // this allows things to be dropped onto the calendar !!!
+                eventDrop: function(info) {
+                    // alert(info.event.title + " was dropped on " + info.event.start.toISOString());
+                    console.log(info.event);
+                    var obj = info.event;
+                    saveEdit(obj.id, obj.start, obj.end);
+
+                    // if (!confirm("Are you sure about this change?")) {
+                    //     info.revert();
+                    // }
+                },
                 drop: function (info) {
                     // is the "remove after drop" checkbox checked?
                     if (checkbox.checked) {
@@ -210,6 +216,19 @@
             calendar.setOption('locale', 'ru');
             calendar.render();
             // $('#calendar').fullCalendar()
+
+            function saveEdit(id, start, end) {
+                $.post(
+                    "/api/event/update",
+                    {
+                        _token: "{{ csrf_token() }}",
+                        _method: "PUT",
+                        id: id,
+                        start_at: new Date(start).toISOString(),
+                        end_at: new Date(end).toISOString(),
+                    }
+                );
+            }
 
             /* ADDING EVENTS */
             var currColor = '#3c8dbc'; //Red by default

@@ -32,8 +32,12 @@ class EventController extends Controller
         $event->save();
     }
 
-    public function update()
+    public function update(Request $request)
     {
+        $event = Event::findOrFail($request->id);
+        $event->start_at = \Carbon\Carbon::parse($request->start_at)->addHours(3);
+        $event->end_at = \Carbon\Carbon::parse($request->end_at)->addHours(3);
+        $event->save();
     }
 
     public function delete()
